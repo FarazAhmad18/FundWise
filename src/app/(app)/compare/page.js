@@ -3,6 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
+import ChartMount from "@/components/ui/ChartMount";
 import { SENTIMENT_COLORS } from "@/constants/design";
 
 const COMPANIES = {
@@ -148,7 +149,7 @@ export default function ComparePage() {
           <div className="w-1.5 h-5 rounded-full bg-blue" />
           Sentiment Comparison
         </h3>
-        <div className="h-56">
+        <ChartMount className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sentimentCompare} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
@@ -159,7 +160,7 @@ export default function ComparePage() {
               <Bar dataKey="nvda" name="NVDA" fill="#10b981" radius={[6, 6, 0, 0]} barSize={28} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartMount>
         <div className="flex items-center justify-center gap-6 mt-3">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-sm bg-danger" />
