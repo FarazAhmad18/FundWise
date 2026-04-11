@@ -58,9 +58,25 @@ export function AssistantMessage({ text, sources = [], thinking = false }) {
                 Sources
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {sources.map((s, i) => (
-                  <Badge key={i} color="blue">{s}</Badge>
-                ))}
+                {sources.map((s, i) => {
+                  if (typeof s === "string") {
+                    return <Badge key={i} color="blue">{s}</Badge>;
+                  }
+                  const label = `[${s.index ?? i + 1}] ${s.title ?? "Untitled"}`;
+                  return s.url ? (
+                    <a
+                      key={i}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="no-underline"
+                    >
+                      <Badge color="blue">{label}</Badge>
+                    </a>
+                  ) : (
+                    <Badge key={i} color="blue">{label}</Badge>
+                  );
+                })}
               </div>
             </div>
           )}

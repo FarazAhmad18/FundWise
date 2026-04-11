@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { listSources } from "@/features/sources/queries";
+import { listMessages } from "@/features/chat/queries";
 import WorkspaceClient from "./WorkspaceClient";
 
 export default async function WorkspacePage({ params }) {
@@ -28,7 +29,10 @@ export default async function WorkspacePage({ params }) {
     notFound();
   }
 
-  const sources = await listSources(id);
+  const [sources, messages] = await Promise.all([
+    listSources(id),
+    listMessages(id),
+  ]);
 
   const enriched = {
     ...workspace,
@@ -36,5 +40,11 @@ export default async function WorkspacePage({ params }) {
     queryCount: workspace.queries?.[0]?.count ?? 0,
   };
 
-  return <WorkspaceClient workspace={enriched} sources={sources} />;
+  return (
+    <WorkspaceClient
+      workspace={enriched}
+      sources={sources}
+      initialMessages={messages}
+    />
+  );
 }
