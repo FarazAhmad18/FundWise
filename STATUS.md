@@ -3,7 +3,7 @@
 > **Purpose**: Living document for session continuity. Updated as the system evolves.  
 > **Last updated**: 2026-04-11  
 > **Integration branch**: `develop` (all feature branches merge here; `main` = last stable release)  
-> **Current branch**: `feat/chunk-4-ingestion`
+> **Current branch**: `feat/chunk-5-chat-engine`
 
 ---
 
@@ -111,16 +111,25 @@
 | Vector similarity search | Pending | `src/lib/retrieval/` |
 | Source status lifecycle (pending → processing → ingested/failed) | Pending | — |
 
-### Chunk 5 — AI Chat Engine [NOT STARTED]
+### Chunk 5 — AI Chat Engine [COMPLETE, merged to develop]
 | Item | Status | Key Files |
 |------|--------|-----------|
-| Groq API integration | Pending | `src/lib/ai/` |
-| Query handling (save to `queries` table) | Pending | `src/features/chat/` |
-| RAG retrieval (embed query → match chunks) | Pending | `src/lib/retrieval/` |
-| Answer generation with source citations | Pending | `src/features/chat/` |
-| Streaming responses | Pending | — |
-| Mode support: Hybrid / Live Web / Research Base | Pending | — |
-| Wire workspace chat UI to real backend | Pending | — |
+| Groq API client (fetch-based, OpenAI-compatible) | Done | `src/lib/ai/groq.js` |
+| Automatic key fallback on 401/429 | Done | same |
+| Model configurable via `GROQ_MODEL` env var | Done | same |
+| `askQuestion(workspaceId, text, mode)` server action | Done | `src/features/chat/actions.js` |
+| Context retrieval (all chunks, char-budget capped) | Done | same |
+| System prompt with inline [Source N] citation instructions | Done | same |
+| Persists query + answer to DB | Done | same |
+| `listMessages(workspaceId)` pairs queries with answers | Done | `src/features/chat/queries.js` |
+| Workspace detail loads chat history on render | Done | `src/app/(app)/workspace/[id]/page.js` |
+| WorkspaceClient real chat UI: submit, thinking state, scroll-to-bottom | Done | `WorkspaceClient.js` |
+| Disabled input when workspace has no sources | Done | same |
+| Empty-state prompt switches based on whether sources exist | Done | same |
+| Source citation badges render as clickable links | Done | `src/components/ui/ChatMessage.js` |
+| Proper RAG with embeddings (vector search) | Deferred | needs embedding model |
+| Streaming responses | Deferred | will add after basic flow proves out |
+| Live web search mode | Deferred | needs web search API |
 
 ### Chunk 6 — Analytics + Reports [NOT STARTED]
 | Item | Status | Key Files |
