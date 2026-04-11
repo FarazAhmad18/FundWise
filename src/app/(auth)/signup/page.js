@@ -1,6 +1,34 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { signup, signInWithGoogle } from "@/features/auth/actions";
 
 export default function SignupPage() {
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const formData = new FormData(e.target);
+    const result = await signup(formData);
+
+    if (result?.error) {
+      setError(result.error);
+      setLoading(false);
+    }
+  }
+
+  async function handleGoogle() {
+    const result = await signInWithGoogle();
+    if (result?.error) {
+      setError(result.error);
+    }
+  }
+
   return (
     <div className="w-full max-w-[400px] animate-slide-up">
       <div className="text-center mb-8">
@@ -21,7 +49,7 @@ export default function SignupPage() {
       </div>
 
       <div className="card-elevated">
-        <button className="btn-secondary w-full !py-2.5 mb-5">
+        <button onClick={handleGoogle} className="btn-secondary w-full !py-2.5 mb-5">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -37,19 +65,25 @@ export default function SignupPage() {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        <div className="flex flex-col gap-4">
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-danger-light text-danger text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-text mb-1.5">
                 First name
               </label>
-              <input type="text" className="input-field" placeholder="John" />
+              <input type="text" name="firstName" required className="input-field" placeholder="John" />
             </div>
             <div>
               <label className="block text-xs font-medium text-text mb-1.5">
                 Last name
               </label>
-              <input type="text" className="input-field" placeholder="Doe" />
+              <input type="text" name="lastName" required className="input-field" placeholder="Doe" />
             </div>
           </div>
           <div>
@@ -58,6 +92,8 @@ export default function SignupPage() {
             </label>
             <input
               type="email"
+              name="email"
+              required
               className="input-field"
               placeholder="you@example.com"
             />
@@ -68,18 +104,36 @@ export default function SignupPage() {
             </label>
             <input
               type="password"
+              name="password"
+              required
+              minLength={8}
               className="input-field"
               placeholder="Minimum 8 characters"
             />
           </div>
-          <button className="btn-primary w-full !py-2.5 mt-1">
-            Create Account
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full !py-2.5 mt-1 disabled:opacity-50"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                </svg>
+                Creating account...
+              </span>
+            ) : (
+              <>
+                Create Account
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </>
+            )}
           </button>
-        </div>
+        </form>
 
         <p className="text-[11px] text-text-muted text-center mt-4 leading-relaxed">
           By creating an account, you agree to our Terms of Service and Privacy Policy.

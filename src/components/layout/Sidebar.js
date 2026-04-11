@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/constants/navigation";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { logout } from "@/features/auth/actions";
 
 const ICONS = {
   dashboard: (
@@ -90,6 +92,13 @@ function NavSection({ title, links, pathname }) {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const userInitial = user?.user_metadata?.full_name?.[0] ||
+    user?.email?.[0]?.toUpperCase() ||
+    "?";
+  const userName = user?.user_metadata?.full_name || user?.email || "User";
+  const userEmail = user?.email || "";
 
   return (
     <aside
@@ -122,15 +131,43 @@ export default function Sidebar() {
         <NavSection title="Research" links={NAV_LINKS.research} pathname={pathname} />
       </nav>
 
-      {/* Bottom */}
-      <div className="px-3 py-3 border-t border-border-light">
-        {NAV_LINKS.system.map((link) => (
-          <NavItem
-            key={link.href}
-            {...link}
-            isActive={pathname === link.href}
-          />
-        ))}
+      {/* Bottom — Settings + User */}
+      <div className="border-t border-border-light">
+        <div className="px-3 pt-3 pb-2">
+          {NAV_LINKS.system.map((link) => (
+            <NavItem
+              key={link.href}
+              {...link}
+              isActive={pathname === link.href}
+            />
+          ))}
+        </div>
+
+        {/* User Profile */}
+        <div className="px-3 pb-3">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface group">
+            <div className="w-8 h-8 rounded-full bg-accent-light flex items-center justify-center text-accent text-xs font-bold flex-shrink-0">
+              {userInitial}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[12.5px] font-medium text-text truncate">{userName}</p>
+              <p className="text-[10.5px] text-text-muted truncate">{userEmail}</p>
+            </div>
+            <form action={logout}>
+              <button
+                type="submit"
+                className="p-1.5 rounded-md text-text-muted hover:text-danger hover:bg-danger-light transition-colors"
+                title="Sign out"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </aside>
   );
