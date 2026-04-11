@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { listSources } from "@/features/sources/queries";
 import WorkspaceClient from "./WorkspaceClient";
 
 export default async function WorkspacePage({ params }) {
@@ -27,11 +28,13 @@ export default async function WorkspacePage({ params }) {
     notFound();
   }
 
+  const sources = await listSources(id);
+
   const enriched = {
     ...workspace,
     sourceCount: workspace.sources?.[0]?.count ?? 0,
     queryCount: workspace.queries?.[0]?.count ?? 0,
   };
 
-  return <WorkspaceClient workspace={enriched} />;
+  return <WorkspaceClient workspace={enriched} sources={sources} />;
 }

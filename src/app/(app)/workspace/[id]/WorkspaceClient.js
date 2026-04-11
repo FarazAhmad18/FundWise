@@ -1,31 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { UserMessage, AssistantMessage } from "@/components/ui/ChatMessage";
 import ModeToggle from "@/components/ui/ModeToggle";
-import SourceCard from "@/components/ui/SourceCard";
-import Badge from "@/components/ui/Badge";
 import Tabs from "@/components/ui/Tabs";
 import EmptyState from "@/components/ui/EmptyState";
+import SourcesPanel from "@/components/workspace/SourcesPanel";
 
-export default function WorkspaceClient({ workspace }) {
+export default function WorkspaceClient({ workspace, sources }) {
   const [mode, setMode] = useState("hybrid");
   const [inputValue, setInputValue] = useState("");
 
-  const sourceCount = workspace.sourceCount ?? 0;
+  const sourceCount = sources.length;
   const queryCount = workspace.queryCount ?? 0;
   const ticker = workspace.company?.ticker ?? null;
 
-  const sourcesPanel = (
-    <EmptyState
-      icon={
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
-        </svg>
-      }
-      title="No sources yet"
-      description="Add sources to ground answers in real research material."
-    />
+  const sourcesPanelContent = (
+    <SourcesPanel workspaceId={workspace.id} initialSources={sources} />
   );
 
   const evidencePanel = (
@@ -42,7 +32,7 @@ export default function WorkspaceClient({ workspace }) {
   );
 
   const rightPanelTabs = [
-    { key: "sources", label: "Sources", count: sourceCount, content: sourcesPanel },
+    { key: "sources", label: "Sources", count: sourceCount, content: sourcesPanelContent },
     { key: "evidence", label: "Evidence", count: 0, content: evidencePanel },
   ];
 
