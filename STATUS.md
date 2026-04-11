@@ -2,7 +2,7 @@
 
 > **Purpose**: Living document for session continuity. Updated as the system evolves.  
 > **Last updated**: 2026-04-11  
-> **Current branch**: `feat/chunk-2-auth-db` (uncommitted — ready to commit)
+> **Current branch**: `feat/chunk-3-workspaces` (chunk 2 merged, chunk 3 in progress)
 
 ---
 
@@ -37,7 +37,7 @@
 | Compare (TSLA vs NVDA metrics, sentiment, risks) | Done | `src/app/(app)/compare/page.js` |
 | Settings page (profile, AI config, account) | Done | `src/app/(app)/settings/page.js` |
 
-### Chunk 2 — Auth + Database [COMPLETE, uncommitted on branch]
+### Chunk 2 — Auth + Database [COMPLETE, merged to main]
 | Item | Status | Key Files |
 |------|--------|-----------|
 | `@supabase/ssr` added to deps | Done | `package.json` |
@@ -58,17 +58,24 @@
 | `updated_at` trigger on workspaces | Done | same migration file |
 | Docs: chunk writeup, supabase-auth, postgres-relations | Done | `docs/` |
 
-### Chunk 3 — Workspace CRUD + Financial Data [NOT STARTED]
+### Chunk 3 — Workspace CRUD [IN PROGRESS]
 | Item | Status | Key Files |
 |------|--------|-----------|
-| Create/read/update/delete workspaces | Pending | `src/features/workspaces/` |
-| Company lookup / creation | Pending | — |
-| Watchlist add/remove | Pending | — |
-| Alpha Vantage price fetching | Pending | `src/lib/financial/` |
-| SEC EDGAR filing ingestion | Pending | `src/lib/financial/` |
-| API caching layer (respect rate limits) | Pending | — |
-| Wire dashboard to real workspace data | Pending | — |
-| Wire watchlist to real price data | Pending | — |
+| `createWorkspace` server action | Done | `src/features/workspaces/actions.js` |
+| `deleteWorkspace` server action | Done | `src/features/workspaces/actions.js` |
+| `listWorkspaces` query (with sources/queries counts) | Done | `src/features/workspaces/queries.js` |
+| `getWorkspace(id)` query | Done | `src/features/workspaces/queries.js` |
+| `getDashboardStats()` aggregate counts | Done | `src/features/workspaces/queries.js` |
+| `formatRelativeTime()` utility | Done | `src/features/workspaces/queries.js` |
+| Dashboard converted to Server Component (real data) | Done | `src/app/(app)/dashboard/page.js` |
+| Dashboard empty state when no workspaces | Done | same |
+| New Workspace page (form + server action) | Done | `src/app/(app)/workspace/new/page.js` |
+| Workspace detail page split: server fetch + client UI | Done | `src/app/(app)/workspace/[id]/page.js`, `WorkspaceClient.js` |
+| Workspace detail shows real workspace name + stats | Done | `WorkspaceClient.js` |
+| Empty states for sources/evidence/chat panels | Done | `WorkspaceClient.js` |
+| Watchlist real CRUD (deferred to chunk 3.5) | Pending | — |
+| Alpha Vantage price fetching (deferred to chunk 3.5) | Pending | `src/lib/financial/` |
+| SEC EDGAR filing ingestion (deferred to chunk 3.5) | Pending | `src/lib/financial/` |
 
 ### Chunk 4 — Ingestion + RAG Pipeline [NOT STARTED]
 | Item | Status | Key Files |
