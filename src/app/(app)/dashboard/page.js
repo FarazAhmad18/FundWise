@@ -3,16 +3,19 @@ import PageHeader from "@/components/ui/PageHeader";
 import StatCard from "@/components/ui/StatCard";
 import WorkspaceCard from "@/components/ui/WorkspaceCard";
 import EmptyState from "@/components/ui/EmptyState";
+import WatchlistPanel from "@/components/dashboard/WatchlistPanel";
 import {
   listWorkspaces,
   getDashboardStats,
   formatRelativeTime,
 } from "@/features/workspaces/queries";
+import { listWatchlist } from "@/features/watchlist/queries";
 
 export default async function DashboardPage() {
-  const [workspaces, stats] = await Promise.all([
+  const [workspaces, stats, watchlist] = await Promise.all([
     listWorkspaces(),
     getDashboardStats(),
+    listWatchlist(),
   ]);
 
   return (
@@ -76,49 +79,54 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Workspaces */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[15px] font-semibold text-text">Your Workspaces</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Workspaces */}
+        <div className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[15px] font-semibold text-text">Your Workspaces</h2>
+          </div>
+
+          {workspaces.length === 0 ? (
+            <div className="card">
+              <EmptyState
+                icon={
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 4a2 2 0 012-2h5l2 2h9a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4z" />
+                  </svg>
+                }
+                title="No workspaces yet"
+                description="Create your first research workspace to start collecting sources, asking questions, and generating reports."
+                action={
+                  <Link href="/workspace/new" className="btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Create Workspace
+                  </Link>
+                }
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 stagger-children">
+              {workspaces.map((ws) => (
+                <WorkspaceCard
+                  key={ws.id}
+                  id={ws.id}
+                  name={ws.name}
+                  company={ws.company?.name ?? null}
+                  ticker={ws.company?.ticker ?? null}
+                  sourceCount={ws.sourceCount}
+                  queryCount={ws.queryCount}
+                  lastActive={formatRelativeTime(ws.updated_at)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
-        {workspaces.length === 0 ? (
-          <div className="card">
-            <EmptyState
-              icon={
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 4a2 2 0 012-2h5l2 2h9a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4z" />
-                </svg>
-              }
-              title="No workspaces yet"
-              description="Create your first research workspace to start collecting sources, asking questions, and generating reports."
-              action={
-                <Link href="/workspace/new" className="btn-primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  Create Workspace
-                </Link>
-              }
-            />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger-children">
-            {workspaces.map((ws) => (
-              <WorkspaceCard
-                key={ws.id}
-                id={ws.id}
-                name={ws.name}
-                company={ws.company?.name ?? null}
-                ticker={ws.company?.ticker ?? null}
-                sourceCount={ws.sourceCount}
-                queryCount={ws.queryCount}
-                lastActive={formatRelativeTime(ws.updated_at)}
-              />
-            ))}
-          </div>
-        )}
+        {/* Watchlist */}
+        <WatchlistPanel initialItems={watchlist} />
       </div>
     </div>
   );
