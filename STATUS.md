@@ -2,7 +2,8 @@
 
 > **Purpose**: Living document for session continuity. Updated as the system evolves.  
 > **Last updated**: 2026-04-11  
-> **Current branch**: `feat/chunk-3-workspaces` (chunk 2 merged, chunk 3 in progress)
+> **Integration branch**: `develop` (all feature branches merge here; `main` = last stable release)  
+> **Current branch**: `feat/chunk-4-ingestion`
 
 ---
 
@@ -58,7 +59,7 @@
 | `updated_at` trigger on workspaces | Done | same migration file |
 | Docs: chunk writeup, supabase-auth, postgres-relations | Done | `docs/` |
 
-### Chunk 3 — Workspace CRUD [IN PROGRESS]
+### Chunk 3 — Workspace CRUD [COMPLETE, merged to develop]
 | Item | Status | Key Files |
 |------|--------|-----------|
 | `createWorkspace` server action | Done | `src/features/workspaces/actions.js` |
@@ -67,15 +68,37 @@
 | `getWorkspace(id)` query | Done | `src/features/workspaces/queries.js` |
 | `getDashboardStats()` aggregate counts | Done | `src/features/workspaces/queries.js` |
 | `formatRelativeTime()` utility | Done | `src/features/workspaces/queries.js` |
-| Dashboard converted to Server Component (real data) | Done | `src/app/(app)/dashboard/page.js` |
+| Dashboard Server Component with real data | Done | `src/app/(app)/dashboard/page.js` |
 | Dashboard empty state when no workspaces | Done | same |
-| New Workspace page (form + server action) | Done | `src/app/(app)/workspace/new/page.js` |
-| Workspace detail page split: server fetch + client UI | Done | `src/app/(app)/workspace/[id]/page.js`, `WorkspaceClient.js` |
-| Workspace detail shows real workspace name + stats | Done | `WorkspaceClient.js` |
-| Empty states for sources/evidence/chat panels | Done | `WorkspaceClient.js` |
-| Watchlist real CRUD (deferred to chunk 3.5) | Pending | — |
-| Alpha Vantage price fetching (deferred to chunk 3.5) | Pending | `src/lib/financial/` |
-| SEC EDGAR filing ingestion (deferred to chunk 3.5) | Pending | `src/lib/financial/` |
+| New Workspace page | Done | `src/app/(app)/workspace/new/page.js` |
+| Workspace detail: server fetch + client UI split | Done | `src/app/(app)/workspace/[id]/page.js`, `WorkspaceClient.js` |
+
+### Chunk 3.5 — Watchlist [COMPLETE, merged to develop]
+| Item | Status | Key Files |
+|------|--------|-----------|
+| `addToWatchlist` (upserts company by ticker) | Done | `src/features/watchlist/actions.js` |
+| `removeFromWatchlist` | Done | `src/features/watchlist/actions.js` |
+| `listWatchlist` (joined with companies) | Done | `src/features/watchlist/queries.js` |
+| Watchlist UI with inline add form + hover-remove | Done | `src/components/dashboard/WatchlistPanel.js` |
+| Dashboard grid reworked (workspaces 2/3, watchlist 1/3) | Done | `src/app/(app)/dashboard/page.js` |
+| Real stock prices (Alpha Vantage) | Blocked on `ALPHA_VANTAGE_API_KEY` | — |
+
+### Chunk 4 — Source Ingestion [COMPLETE, merged to develop]
+| Item | Status | Key Files |
+|------|--------|-----------|
+| `chunkText()` — sentence-aware chunking | Done | `src/lib/parsing/chunk.js` |
+| `htmlToText()` — strip tags, decode entities | Done | `src/lib/parsing/chunk.js` |
+| `addSource()` — handles URL fetch OR pasted text | Done | `src/features/sources/actions.js` |
+| URL fetching with timeout + User-Agent + fallback | Done | same |
+| `deleteSource()` | Done | same |
+| `listSources(workspaceId)` | Done | `src/features/sources/queries.js` |
+| Auto-chunk on ingest, persists to `source_chunks` | Done | `src/features/sources/actions.js` |
+| Touches workspace `updated_at` on source add | Done | same |
+| SourcesPanel client component (add form + list + delete) | Done | `src/components/workspace/SourcesPanel.js` |
+| Workspace detail page wired to real sources | Done | `src/app/(app)/workspace/[id]/page.js` |
+| Source status badges (pending/ingested/failed) | Done | `SourcesPanel.js` |
+| Embeddings generation | Blocked on embedding API / model | — |
+| SEC EDGAR filing ingestion | Deferred to later chunk | — |
 
 ### Chunk 4 — Ingestion + RAG Pipeline [NOT STARTED]
 | Item | Status | Key Files |
