@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
+import ChartMount from "@/components/ui/ChartMount";
 import { CHART_COLORS, SENTIMENT_COLORS } from "@/constants/design";
 
 const sentimentData = [
@@ -91,7 +92,7 @@ export default function AnalyticsPage() {
             <h3 className="text-[14px] font-semibold text-text">Sentiment Distribution</h3>
             <Badge color="red">Bearish lean</Badge>
           </div>
-          <div className="h-52">
+          <ChartMount className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -111,7 +112,7 @@ export default function AnalyticsPage() {
                 <Tooltip contentStyle={customTooltipStyle} />
               </PieChart>
             </ResponsiveContainer>
-          </div>
+          </ChartMount>
           <div className="flex items-center justify-center gap-5 mt-2">
             {sentimentData.map((s) => (
               <div key={s.name} className="flex items-center gap-1.5">
@@ -126,7 +127,7 @@ export default function AnalyticsPage() {
         {/* Sentiment Over Time */}
         <div className="card">
           <h3 className="text-[14px] font-semibold text-text mb-5">Sentiment Over Time</h3>
-          <div className="h-52">
+          <ChartMount className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={sentimentOverTime}>
                 <defs>
@@ -147,13 +148,13 @@ export default function AnalyticsPage() {
                 <Area type="monotone" dataKey="negative" stroke={SENTIMENT_COLORS.bearish} fill="url(#gradNegative)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ChartMount>
         </div>
 
         {/* Topic Frequency */}
         <div className="card">
           <h3 className="text-[14px] font-semibold text-text mb-5">Topic Frequency</h3>
-          <div className="h-52">
+          <ChartMount className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={topicData} layout="vertical" barSize={16}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" horizontal={false} />
@@ -163,13 +164,13 @@ export default function AnalyticsPage() {
                 <Bar dataKey="count" fill={CHART_COLORS[0]} radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartMount>
         </div>
 
         {/* Source Coverage */}
         <div className="card">
           <h3 className="text-[14px] font-semibold text-text mb-5">Source Coverage</h3>
-          <div className="h-52">
+          <ChartMount className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={sourceData} barSize={24}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
@@ -183,7 +184,7 @@ export default function AnalyticsPage() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartMount>
         </div>
 
         {/* Event Timeline */}
@@ -215,7 +216,7 @@ export default function AnalyticsPage() {
             <h3 className="text-[14px] font-semibold text-text">Signal Balance</h3>
             <Badge color="red">48% bearish</Badge>
           </div>
-          <div className="h-44">
+          <ChartMount className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -235,7 +236,7 @@ export default function AnalyticsPage() {
                 <Tooltip contentStyle={customTooltipStyle} />
               </PieChart>
             </ResponsiveContainer>
-          </div>
+          </ChartMount>
           <div className="flex items-center justify-center gap-5 mt-2">
             {signalData.map((s) => (
               <div key={s.name} className="flex items-center gap-1.5">
