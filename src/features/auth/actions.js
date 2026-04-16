@@ -15,6 +15,16 @@ export async function login(formData) {
     return { error: error.message };
   }
 
+  // Check if user has completed onboarding
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("onboarding_completed")
+    .single();
+
+  if (!profile?.onboarding_completed) {
+    redirect("/onboarding");
+  }
+
   redirect("/dashboard");
 }
 
@@ -42,7 +52,8 @@ export async function signup(formData) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  // New users always go to onboarding
+  redirect("/onboarding");
 }
 
 export async function logout() {

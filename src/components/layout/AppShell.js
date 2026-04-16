@@ -1,10 +1,11 @@
 "use client";
 
 import Sidebar from "./Sidebar";
+import CommandPalette from "@/components/ui/CommandPalette";
 
 export default function AppShell({ children }) {
   return (
-    <div className="flex min-h-screen bg-surface">
+    <div className="flex min-h-screen bg-bg">
       <Sidebar />
       <main
         className="flex-1 min-w-0 overflow-y-auto"
@@ -12,6 +13,7 @@ export default function AppShell({ children }) {
       >
         {children}
       </main>
+      <CommandPalette />
     </div>
   );
 }

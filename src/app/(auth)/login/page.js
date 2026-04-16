@@ -44,7 +44,7 @@ export default function LoginPage() {
           Welcome back
         </h1>
         <p className="text-sm text-text-sec">
-          Sign in to continue to your research workspace
+          Sign in to your account
         </p>
       </div>
 

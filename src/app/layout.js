@@ -1,25 +1,27 @@
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist",
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: "--font-geist-mono",
+  display: "swap",
 });
 
 export const metadata = {
-  title: "Financial Research Copilot",
+  title: "Fundwise",
   description:
-    "AI-powered financial research platform with live web research, source-grounded answers, and analytics dashboards.",
+    "Your money, finally organized. Track your portfolio, follow the market, set goals, and get AI-powered advice.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <body>{children}</body>
     </html>
   );

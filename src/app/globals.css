@@ -1,16 +1,15 @@
 @import "tailwindcss";
 
 /* ============================================
-   Financial Research Copilot — Design System
+   Fundwise — Design System
    Light-mode, clean white + emerald accent
-   Premium luxury feel (Stripe/Linear inspired)
    ============================================ */
 
 :root {
   /* --- Surfaces --- */
   --bg: #ffffff;
-  --surface: #f8fafb;
-  --surface-muted: #f1f5f9;
+  --surface: #ffffff;
+  --surface-muted: #f8fafb;
   --card: #ffffff;
   --card-elevated: #ffffff;
 
@@ -25,12 +24,12 @@
   --text-muted: #94a3b8;
   --text-inv: #ffffff;
 
-  /* --- Accent (Emerald) --- */
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --accent-light: #ecfdf5;
-  --accent-subtle: #f0fdf9;
-  --accent-text: #065f46;
+  /* --- Accent (Subtle emerald — used sparingly) --- */
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-light: #f0fdf4;
+  --accent-subtle: #f7fef9;
+  --accent-text: #064e3b;
 
   /* --- Semantic --- */
   --success: #22c55e;
@@ -111,8 +110,8 @@
   --color-rose: var(--rose);
   --color-rose-light: var(--rose-light);
 
-  --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: var(--font-jetbrains), "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --font-sans: var(--font-geist), -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 
   --shadow-xs: var(--shadow-xs);
   --shadow-card: var(--shadow-card);
@@ -130,16 +129,25 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv11", "ss01", "ss03";
 }
 
 h1, h2, h3, h4, h5, h6 {
-  line-height: 1.25;
+  line-height: 1.15;
   font-weight: 600;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.022em;
+}
+
+h1 { letter-spacing: -0.035em; }
+h2 { letter-spacing: -0.028em; }
+
+.font-mono, [class*="font-mono"] {
+  font-feature-settings: "tnum", "ss01";
 }
 
 /* ============================================
@@ -384,6 +392,65 @@ h1, h2, h3, h4, h5, h6 {
 .stagger-children > *:nth-child(8) { animation-delay: 420ms; }
 
 /* ============================================
+   Premium Dashboard Effects
+   ============================================ */
+
+.hero-gradient {
+  background: #ffffff;
+}
+
+.hero-mesh {
+  background-image: none;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes drawLine {
+  from { stroke-dashoffset: 500; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-count-up {
+  animation: countUp 0.6s var(--ease-out-expo) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s var(--ease-out-expo) forwards;
+}
+
+.sparkline-animate {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  animation: drawLine 1.5s var(--ease-out-expo) forwards;
+}
+
+/* Stagger with longer delays for dashboard sections */
+.stagger-sections > * {
+  opacity: 0;
+  animation: slideUp 0.5s var(--ease-out-expo) forwards;
+}
+.stagger-sections > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-sections > *:nth-child(2) { animation-delay: 100ms; }
+.stagger-sections > *:nth-child(3) { animation-delay: 200ms; }
+.stagger-sections > *:nth-child(4) { animation-delay: 300ms; }
+.stagger-sections > *:nth-child(5) { animation-delay: 400ms; }
+
+/* ============================================
    Scrollbar
    ============================================ */
 
@@ -403,6 +470,51 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);
+}
+
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ============================================
+   Range Slider (What-If Simulator)
+   ============================================ */
+
+input[type="range"].sim-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 100px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].sim-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 0 4px var(--accent-light), 0 1px 4px rgba(0,0,0,0.12);
+  transition: box-shadow 0.15s ease;
+}
+input[type="range"].sim-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 6px var(--accent-light), 0 2px 8px rgba(0,0,0,0.15);
+}
+input[type="range"].sim-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px var(--accent-light), 0 1px 4px rgba(0,0,0,0.12);
+}
+input[type="range"].sim-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 100px;
+  background: var(--border);
 }
 
 /* ============================================

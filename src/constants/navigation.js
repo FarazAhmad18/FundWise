@@ -6,26 +6,31 @@ export const NAV_LINKS = {
       icon: "dashboard",
     },
     {
-      href: "/workspace",
-      label: "Workspaces",
-      icon: "workspaces",
+      href: "/market",
+      label: "Market",
+      icon: "market",
     },
     {
-      href: "/compare",
-      label: "Compare",
-      icon: "compare",
+      href: "/portfolio",
+      label: "Portfolio",
+      icon: "portfolio",
     },
     {
-      href: "/analytics",
-      label: "Analytics",
-      icon: "analytics",
+      href: "/news",
+      label: "News",
+      icon: "news",
     },
   ],
-  research: [
+  invest: [
     {
-      href: "/reports",
-      label: "Reports",
-      icon: "reports",
+      href: "/advisor",
+      label: "AI Advisor",
+      icon: "advisor",
+    },
+    {
+      href: "/goals",
+      label: "Goals",
+      icon: "goals",
     },
   ],
   system: [
@@ -39,9 +44,10 @@ export const NAV_LINKS = {
 
 export const ROUTE_TITLES = {
   "/dashboard": "Dashboard",
-  "/workspace": "Workspaces",
-  "/compare": "Compare",
-  "/reports": "Reports",
+  "/market": "Market",
+  "/portfolio": "Portfolio",
+  "/news": "News",
+  "/advisor": "AI Advisor",
+  "/goals": "Goals",
   "/settings": "Settings",
-  "/analytics": "Analytics",
 };

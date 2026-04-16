@@ -1,13 +1,35 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { addToWatchlist, removeFromWatchlist } from "@/features/watchlist/actions";
+import { formatCurrency } from "@/constants/markets";
 
-export default function WatchlistPanel({ initialItems }) {
+function PriceDisplay({ quote, currency }) {
+  if (!quote) {
+    return <span className="font-mono text-[11px] text-text-muted">--</span>;
+  }
+
+  const isUp = quote.change >= 0;
+  const color = isUp ? "text-emerald-600" : "text-red-500";
+
+  return (
+    <div className="text-right">
+      <p className={`font-mono text-[13px] font-semibold ${color}`}>
+        {formatCurrency(quote.price, quote.currency || currency)}
+      </p>
+      <p className={`font-mono text-[10px] ${color}`}>
+        {isUp ? "+" : ""}{quote.changePct.toFixed(2)}%
+      </p>
+    </div>
+  );
+}
+
+export default function WatchlistPanel({ initialItems, quotes = {}, currency = "USD" }) {
   const [items, setItems] = useState(initialItems);
   const [error, setError] = useState(null);
   const [pending, startTransition] = useTransition();
-  const [showForm, setShowForm] = useState(initialItems.length === 0);
+  const [showForm, setShowForm] = useState(false);
 
   async function handleAdd(e) {
     e.preventDefault();
@@ -27,6 +49,7 @@ export default function WatchlistPanel({ initialItems }) {
           ...prev,
         ]);
         form.reset();
+        setShowForm(false);
       }
     });
   }
@@ -46,88 +69,94 @@ export default function WatchlistPanel({ initialItems }) {
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
-          className="text-xs text-accent font-medium hover:underline"
+          className="text-[13px] text-accent font-medium hover:underline"
         >
-          {showForm ? "Close" : "Add"}
+          {showForm ? "Cancel" : "+ Add"}
         </button>
       </div>
 
-      <div className="card">
+      <div className="rounded-2xl border border-border overflow-hidden">
         {showForm && (
-          <form onSubmit={handleAdd} className="flex flex-col gap-2 mb-4 pb-4 border-b border-border-light">
-            <div className="grid grid-cols-[90px_1fr_auto] gap-2">
+          <form onSubmit={handleAdd} className="p-4 border-b border-border-light">
+            <div className="flex gap-2">
               <input
                 name="ticker"
                 required
                 maxLength={10}
-                placeholder="TSLA"
-                className="input-field !py-1.5 !text-xs font-mono uppercase"
+                placeholder="Ticker"
+                className="input-field !py-2 !text-[12px] font-mono uppercase flex-1"
               />
               <input
                 name="name"
-                placeholder="Tesla (optional)"
-                className="input-field !py-1.5 !text-xs"
+                placeholder="Name (optional)"
+                className="input-field !py-2 !text-[12px] flex-1"
               />
               <button
                 type="submit"
                 disabled={pending}
-                className="btn-primary !py-1.5 !px-3 !text-xs disabled:opacity-50"
+                className="btn-primary !py-2 !px-4 !text-[12px] disabled:opacity-50"
               >
                 Add
               </button>
             </div>
-            {error && (
-              <p className="text-[11px] text-danger">{error}</p>
-            )}
+            {error && <p className="text-[11px] text-danger mt-2">{error}</p>}
           </form>
         )}
 
         {items.length === 0 ? (
-          <p className="text-xs text-text-muted text-center py-4">
-            No tickers yet. Add one to track it.
-          </p>
+          <div className="p-6 text-center">
+            <p className="text-[12px] text-text-muted mb-3">
+              No stocks in your watchlist yet.
+            </p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="text-[12px] text-accent font-medium hover:underline"
+            >
+              Add your first stock
+            </button>
+          </div>
         ) : (
-          <div className="flex flex-col divide-y divide-border-light">
-            {items.map((stock) => (
-              <div
-                key={stock.watchlistId}
-                className="flex items-center justify-between py-3 first:pt-0 last:pb-0 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-surface-muted flex items-center justify-center">
-                    <span className="font-mono text-[11px] font-bold text-text-sec">
-                      {stock.ticker?.slice(0, 2)}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-text">{stock.ticker}</p>
-                    <p className="text-[11px] text-text-muted truncate max-w-[140px]">
-                      {stock.name}
-                    </p>
-                  </div>
+          items.map((stock, i) => (
+            <Link
+              key={stock.watchlistId}
+              href={`/market/${encodeURIComponent(stock.ticker)}`}
+              className={`flex items-center justify-between px-5 py-3.5 hover:bg-accent-subtle transition-colors group ${
+                i < items.length - 1 ? "border-b border-border-light" : ""
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-accent-light flex items-center justify-center flex-shrink-0">
+                  <span className="font-mono text-[10px] font-bold text-accent">
+                    {stock.ticker?.split(".")[0]?.slice(0, 2)}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] text-text-muted">—</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(stock.id)}
-                    className="text-text-muted hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                    title="Remove"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold text-text">{stock.ticker?.split(".")[0]}</p>
+                  <p className="text-[11px] text-text-muted truncate">{stock.name}</p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-2">
+                <PriceDisplay quote={quotes[stock.ticker]} currency={currency} />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemove(stock.id);
+                  }}
+                  className="text-text-muted hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity p-1 ml-1"
+                  title="Remove"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </Link>
+          ))
         )}
       </div>
-      <p className="text-[10px] text-text-muted mt-2 px-1">
-        Live prices coming soon (Alpha Vantage integration).
-      </p>
     </div>
   );
 }

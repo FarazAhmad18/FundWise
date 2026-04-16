@@ -44,7 +44,7 @@ export default function SignupPage() {
           Create your account
         </h1>
         <p className="text-sm text-text-sec">
-          Start researching in under a minute
+          Free to use. Takes 30 seconds.
         </p>
       </div>
 
