@@ -359,6 +359,15 @@ h2 { letter-spacing: -0.028em; }
   animation: slideUp 0.4s var(--ease-out-expo);
 }
 
+.animate-slide-right {
+  animation: slideRight 0.25s var(--ease-out-expo);
+}
+
+@keyframes slideRight {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
 .animate-slide-down {
   animation: slideDown 0.3s var(--ease-out-expo);
 }

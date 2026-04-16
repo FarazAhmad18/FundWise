@@ -7,10 +7,7 @@ export default function AppShell({ children }) {
   return (
     <div className="flex min-h-screen bg-bg">
       <Sidebar />
-      <main
-        className="flex-1 min-w-0 overflow-y-auto"
-        style={{ marginLeft: "var(--sidebar-width)" }}
-      >
+      <main className="flex-1 min-w-0 overflow-y-auto lg:ml-[var(--sidebar-width)]">
         {children}
       </main>
       <CommandPalette />

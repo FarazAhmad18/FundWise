@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/constants/navigation";
@@ -60,10 +61,11 @@ const ICONS = {
   ),
 };
 
-function NavItem({ href, label, icon, isActive }) {
+function NavItem({ href, label, icon, isActive, onClick }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`
         flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium
         transition-all duration-150 group
@@ -81,7 +83,7 @@ function NavItem({ href, label, icon, isActive }) {
   );
 }
 
-function NavSection({ title, links, pathname }) {
+function NavSection({ title, links, pathname, onNavigate }) {
   return (
     <div className="mb-6">
       <p className="section-title px-3 mb-2">{title}</p>
@@ -91,6 +93,7 @@ function NavSection({ title, links, pathname }) {
             key={link.href}
             {...link}
             isActive={pathname === link.href || pathname.startsWith(link.href + "/")}
+            onClick={onNavigate}
           />
         ))}
       </div>
@@ -101,6 +104,21 @@ function NavSection({ title, links, pathname }) {
 export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Close on escape
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const userInitial = user?.user_metadata?.full_name?.[0] ||
     user?.email?.[0]?.toUpperCase() ||
@@ -108,14 +126,11 @@ export default function Sidebar() {
   const userName = user?.user_metadata?.full_name || user?.email || "User";
   const userEmail = user?.email || "";
 
-  return (
-    <aside
-      className="fixed top-0 left-0 h-screen bg-bg border-r border-border flex flex-col z-40"
-      style={{ width: "var(--sidebar-width)" }}
-    >
+  const sidebarContent = (
+    <>
       {/* Logo */}
       <div className="px-5 py-5 border-b border-border-light">
-        <Link href="/dashboard" className="flex items-center gap-2.5">
+        <Link href="/dashboard" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 21H4a1 1 0 01-1-1V3" />
@@ -123,33 +138,27 @@ export default function Sidebar() {
             </svg>
           </div>
           <div>
-            <span className="text-[15px] font-semibold text-text tracking-tight">
-              Fundwise
-            </span>
-            <span className="block text-[10.5px] text-text-muted font-medium tracking-wide uppercase">
-              Smart Investing
-            </span>
+            <span className="text-[15px] font-semibold text-text tracking-tight">Fundwise</span>
+            <span className="block text-[10.5px] text-text-muted font-medium tracking-wide uppercase">Smart Investing</span>
           </div>
         </Link>
       </div>
 
-      {/* Search trigger (Cmd+K) */}
-      <div className="px-3 pt-4">
+      {/* Search trigger */}
+      <div className="px-3 pt-4 hidden lg:block">
         <button
           type="button"
           onClick={() => {
+            setOpen(false);
             const event = new KeyboardEvent("keydown", { key: "k", metaKey: true, ctrlKey: true });
             window.dispatchEvent(event);
           }}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border text-left hover:border-accent hover:shadow-xs transition-all group"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-muted group-hover:text-text-sec flex-shrink-0">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <span className="flex-1 text-[12.5px] text-text-muted group-hover:text-text-sec">
-            Search
-          </span>
+          <span className="flex-1 text-[12.5px] text-text-muted group-hover:text-text-sec">Search</span>
           <kbd className="text-[9.5px] font-mono font-semibold text-text-muted bg-surface-muted border border-border-light px-1.5 py-0.5 rounded">
             {typeof navigator !== "undefined" && /Mac/.test(navigator.platform) ? "\u2318K" : "Ctrl K"}
           </kbd>
@@ -158,23 +167,17 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 pt-5">
-        <NavSection title="Overview" links={NAV_LINKS.main} pathname={pathname} />
-        <NavSection title="Invest" links={NAV_LINKS.invest} pathname={pathname} />
+        <NavSection title="Overview" links={NAV_LINKS.main} pathname={pathname} onNavigate={() => setOpen(false)} />
+        <NavSection title="Invest" links={NAV_LINKS.invest} pathname={pathname} onNavigate={() => setOpen(false)} />
       </nav>
 
-      {/* Bottom — Settings + User */}
+      {/* Bottom */}
       <div className="border-t border-border-light">
         <div className="px-3 pt-3 pb-2">
           {NAV_LINKS.system.map((link) => (
-            <NavItem
-              key={link.href}
-              {...link}
-              isActive={pathname === link.href}
-            />
+            <NavItem key={link.href} {...link} isActive={pathname === link.href} onClick={() => setOpen(false)} />
           ))}
         </div>
-
-        {/* User Profile */}
         <div className="px-3 pb-3">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface group">
             <div className="w-8 h-8 rounded-full bg-accent-light flex items-center justify-center text-accent text-xs font-bold flex-shrink-0">
@@ -185,21 +188,59 @@ export default function Sidebar() {
               <p className="text-[10.5px] text-text-muted truncate">{userEmail}</p>
             </div>
             <form action={logout}>
-              <button
-                type="submit"
-                className="p-1.5 rounded-md text-text-muted hover:text-danger hover:bg-danger-light transition-colors"
-                title="Sign out"
-              >
+              <button type="submit" className="p-1.5 rounded-md text-text-muted hover:text-danger hover:bg-danger-light transition-colors" title="Sign out">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
               </button>
             </form>
           </div>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile hamburger */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed top-4 left-4 z-50 lg:hidden w-10 h-10 rounded-xl bg-card border border-border shadow-card flex items-center justify-center"
+        aria-label="Open menu"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      {/* Desktop sidebar — always visible */}
+      <aside
+        className="fixed top-0 left-0 h-screen bg-bg border-r border-border flex-col z-40 hidden lg:flex"
+        style={{ width: "var(--sidebar-width)" }}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile overlay + drawer */}
+      {open && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <aside className="absolute top-0 left-0 h-full w-[280px] bg-bg border-r border-border flex flex-col animate-slide-right">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-surface-muted flex items-center justify-center text-text-muted"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }
